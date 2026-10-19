@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#08091c">
+<title>فرار از نئون — نسخه ارتقایافته</title>
+<style>
+:root{--cyan:#66f7ff;--purple:#a98bff;--pink:#ff4caa;--panel:#11152cf2}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#060716;color:#fff;font-family:Tahoma,Arial,sans-serif;touch-action:pan-x pan-y}
+#wrap{width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at 50% 18%,#25205b 0%,#0a0b20 60%,#03040c 100%)}
+#game{position:relative;width:min(100vw,56.25vh);height:min(177.78vw,100vh);max-width:480px;max-height:854px;overflow:hidden;background:#0b0d25;border:1px solid #5651a0;box-shadow:0 0 38px #6253ff35;isolation:isolate}
+canvas{width:100%;height:100%;display:block;touch-action:none}
+.hud{position:absolute;top:10px;left:9px;right:9px;display:flex;align-items:center;justify-content:space-between;gap:5px;z-index:3;pointer-events:none}
+.pill{background:#0c1028d9;border:1px solid #7777ff88;border-radius:13px;padding:7px 9px;font-weight:bold;font-size:12px;box-shadow:0 0 12px #6b52ff22;white-space:nowrap}
+.hud button{pointer-events:auto}
+button{border:0;border-radius:14px;padding:13px 16px;font-family:inherit;font-size:15px;font-weight:bold;color:#071020;background:linear-gradient(100deg,#65f5ff,#b7ffb1);box-shadow:0 4px 0 #218c9a;cursor:pointer}
+button:active{transform:translateY(2px);box-shadow:0 2px 0 #218c9a}
+button.secondary{color:white;background:linear-gradient(100deg,#38386e,#5a448c);box-shadow:0 4px 0 #29234e;border:1px solid #a39bff66}
+button:disabled{opacity:.5;filter:grayscale(.5)}
+#overlay,#skinPanel{position:absolute;inset:0;z-index:6;display:flex;align-items:center;justify-content:center;background:#05071beF;padding:20px;text-align:center;overflow:auto}
+#skinPanel{display:none;z-index:8}
+.panel{width:100%;border:1px solid #8e74ff99;border-radius:23px;padding:23px 17px;background:linear-gradient(145deg,#191b48f7,#101329f7);box-shadow:0 0 35px #6c49ff40}
+h1{font-size:29px;margin:0 0 8px;color:#9dfcff;text-shadow:0 0 18px #00d9ff66}
+.subtitle{color:#d4d6ff;line-height:1.9;font-size:13px;margin:10px 0 18px}
+.small{font-size:11px;color:#a9aedb;margin-top:15px;line-height:1.8}
+.stack{display:grid;gap:10px}
+#toast{display:none;position:absolute;top:64px;left:50%;transform:translateX(-50%);background:#121a39ed;border:1px solid var(--cyan);border-radius:13px;padding:9px 12px;color:#aaffff;font-size:12px;font-weight:bold;z-index:10;white-space:nowrap;max-width:94%;text-align:center}
+#bottomBar{position:absolute;bottom:12px;left:12px;right:12px;display:flex;justify-content:space-between;gap:10px;z-index:3;pointer-events:none}
+.mini{pointer-events:auto;background:#11152ddd;border:1px solid #8582ff88;color:#fff;border-radius:13px;padding:9px 12px;font-size:12px;box-shadow:none}
+#hint{position:absolute;bottom:58px;left:0;right:0;text-align:center;color:#d4d6ff;font-size:11px;pointer-events:none;text-shadow:0 1px 5px #000;opacity:.85}
+.skinBtn{display:flex;justify-content:space-between;align-items:center;gap:8px;text-align:right}
+
+#overlay{background:radial-gradient(ellipse at 50% 25%,#30246deF 0%,#090b22f5 58%,#03040cf7 100%)}
+#overlay .panel{position:relative;overflow:hidden;border-color:#6df7ff99;background:linear-gradient(155deg,#171d49f5 0%,#151333f8 52%,#26133df5 100%);box-shadow:0 0 24px #4c4dff44, inset 0 0 24px #66f7ff0a;animation:menuIn .55s ease-out}
+#overlay .panel:before{content:"";position:absolute;inset:-70% -30%;background:linear-gradient(110deg,transparent 43%,#72faff0b 50%,transparent 57%);transform:rotate(-10deg);pointer-events:none}
+.brandMark{width:84px;height:84px;margin:0 auto 12px;border-radius:25px;display:grid;place-items:center;font-size:43px;background:linear-gradient(145deg,#142e55,#28164e);border:1px solid #70f7ffbb;box-shadow:0 0 14px #00eaff66,inset 0 0 20px #a34dff30;text-shadow:0 0 15px #66f7ff;transform:rotate(-5deg)}
+#overlay h1{font-size:31px;letter-spacing:.2px;text-shadow:0 0 8px #00eaffaa,0 0 24px #7254ff88}
+.menuTag{display:inline-block;margin:0 auto 8px;padding:5px 12px;border:1px solid #ff4caa77;border-radius:999px;color:#ffb8e1;background:#ff4caa12;font-size:11px;letter-spacing:.5px}
+#overlay .subtitle{position:relative}
+#overlay #startBtn{background:linear-gradient(100deg,#64f5ff,#b6ffcf);box-shadow:0 4px 0 #218c9a,0 0 18px #00eaff30}
+.creator{margin-top:17px;padding-top:12px;border-top:1px solid #7e7bff3b;color:#c9c9f5;font-size:12px;line-height:1.9}
+.creator strong{color:#91fbff;font-size:14px;text-shadow:0 0 10px #00d9ff66}
+@keyframes menuIn{from{opacity:0;transform:translateY(12px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+
+.skinBtn span{font-size:12px}
+@media(max-height:620px){.panel{padding:14px}h1{font-size:24px}.subtitle{margin:7px 0 10px}.small{margin-top:8px}.hud{top:5px}.pill{padding:5px 7px;font-size:10px}}
+</style>
+</head>
+<body>
+<div id="wrap"><main id="game">
+<canvas id="c" width="480" height="854" aria-label="بازی فرار از نئون"></canvas>
+<div class="hud">
+ <div class="pill">⭐ <span id="score">۰</span></div>
+ <div class="pill">💎 <span id="runCoins">۰</span></div>
+ <div class="pill">مرحله <span id="stage">۱</span></div>
+ <button id="shopBtn" class="mini" aria-label="فروشگاه اسکین">👕 اسکین</button>
+</div>
+<div id="toast" role="status"></div>
+<div id="hint">بکش تا حرکت کنی • به بالا بکش تا بپری • لمس چپ/راست = جابه‌جایی</div>
+<div id="bottomBar"><button id="pauseBtn" class="mini">⏸ مکث</button><button id="soundBtn" class="mini">🔊 صدا: خاموش</button></div>
+<div id="overlay"><div class="panel">
+<div class="brandMark">💎</div>
+<div class="menuTag">NEON RUN • CYBER CHALLENGE</div>
+<h1>فرار از نئون</h1>
+<div class="subtitle">به شهر سایبری خوش آمدی! ⚡<br>از موانع نئونی جاخالی بده، کریستال جمع کن و با جایزهٔ هر مرحله اسکین‌های تازه باز کن.</div>
+<div class="stack"><button id="startBtn">🚀 شروع ماجراجویی</button><button id="menuShopBtn" class="secondary">👕 فروشگاه اسکین</button></div>
+<div class="small">🎮 بازی آفلاین • مخصوص موبایل و رایانه<br>⭐ رکورد: <b id="best">۰</b> امتیاز • 💰 سکه: <b id="wallet">۰</b></div>
+<div class="creator">ساخته‌شده با عشق به بازی‌سازی<br><strong>سازنده: پارسا خان محمدی</strong></div>
+</div></div>
+<div id="skinPanel"><div class="panel">
+<h1 style="font-size:26px">فروشگاه اسکین</h1>
+<div class="subtitle">ظاهر قهرمانت را عوض کن. سکه‌ها بعد از هر مرحله و با جمع‌آوری کریستال به دست می‌آیند.</div>
+<div class="stack" id="skinList"></div>
+<button id="closeShop" class="secondary" style="width:100%;margin-top:12px">بازگشت</button>
+<div class="small">پیشرفت روی همین مرورگر ذخیره می‌شود.</div>
+</div></div>
+</main></div>
+<script>
+(()=>{
+'use strict';
+const canvas=document.getElementById('c'),ctx=canvas.getContext('2d',{alpha:false});
+const $=id=>document.getElementById(id),W=480,H=854;
+const STORE={money:'neon2Money',best:'neon2Best',skin:'neon2Skin',skins:'neon2Skins'};
+function read(key,fallback){try{const v=localStorage.getItem(key);return v===null?fallback:JSON.parse(v)}catch(_){return fallback}}
+function write(key,value){try{localStorage.setItem(key,JSON.stringify(value))}catch(_){}}
+const fa=n=>Math.floor(n).toLocaleString('fa-IR');
+const colors=[
+ {name:'نئون آبی',price:0,body:'#34d9ed',leg:'#55eaff',scarf:'#ff4d9d',glow:'#00eaff'},
+ {name:'شعله‌ای',price:100,body:'#ff633d',leg:'#ffd166',scarf:'#ff347b',glow:'#ff633d'},
+ {name:'سایه بنفش',price:200,body:'#a77bff',leg:'#d8c4ff',scarf:'#ff6bda',glow:'#a77bff'},
+ {name:'سمّی',price:300,body:'#54f58a',leg:'#b5ff6b',scarf:'#39e8cf',glow:'#54f58a'},
+ {name:'طلایی',price:500,body:'#ffcf4a',leg:'#fff0a3',scarf:'#ff7d35',glow:'#ffcf4a'}
+];
+let money=Math.max(0,Number(read(STORE.money,0))||0),best=Math.max(0,Number(read(STORE.best,0))||0);
+let activeSkin=Math.min(colors.length-1,Math.max(0,Number(read(STORE.skin,0))||0));
+let unlocked=read(STORE.skins,[0]);if(!Array.isArray(unlocked))unlocked=[0];if(!unlocked.includes(0))unlocked.unshift(0);
+let running=false,paused=false,gameOver=false,score=0,runCoins=0,stage=1,frame=0,speed=5,spawn=0,gemSpawn=0,stageFrames=0;
+let obstacles=[],gems=[],particles=[],stars=[],lastTime=0,acc=0,soundOn=false,audioCtx=null;
+let player={x:240,y:690,vy:0,jumping:false,invuln:0};
+for(let i=0;i<100;i++)stars.push({x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.7+.3,a:Math.random()*.6+.2});
+function save(){write(STORE.money,money);write(STORE.best,best);write(STORE.skin,activeSkin);write(STORE.skins,unlocked);updateHud();}
+function updateHud(){$('wallet').textContent=fa(money);$('best').textContent=fa(best);$('score').textContent=fa(score);$('runCoins').textContent=fa(runCoins);$('stage').textContent=fa(stage)}
+function toast(msg){const t=$('toast');t.textContent=msg;t.style.display='block';clearTimeout(toast.timer);toast.timer=setTimeout(()=>t.style.display='none',2100)}
+function beep(freq=500,duration=.07){if(!soundOn)return;try{audioCtx=audioCtx||new(window.AudioContext||window.webkitAudioContext)();const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.frequency.value=freq;o.type='sine';g.gain.value=.035;o.connect(g);g.connect(audioCtx.destination);o.start();g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+duration);o.stop(audioCtx.currentTime+duration)}catch(_){}}
+function roadX(lane,y){const t=Math.max(0,Math.min(1,(y-350)/504));return 240+(lane-1)*(18+ t*154)}
+function reset(){score=0;runCoins=0;stage=1;frame=0;stageFrames=0;speed=5;spawn=0;gemSpawn=0;obstacles=[];gems=[];particles=[];player={x:240,y:690,vy:0,jumping:false,invuln:0};gameOver=false;paused=false;updateHud();$('pauseBtn').textContent='⏸ مکث'}
+function start(){
+ // Rebuild the overlay before every restart so the start control is always fresh and wired.
+ $('overlay').innerHTML='<div class="panel"><div class="brandMark">💎</div><div class="menuTag">NEON RUN • CYBER CHALLENGE</div><h1>فرار از نئون</h1><div class="subtitle">به شهر سایبری خوش آمدی! ⚡<br>از موانع نئونی جاخالی بده، کریستال جمع کن و با جایزهٔ هر مرحله اسکین‌های تازه باز کن.</div><div class="stack"><button id="startBtn">🚀 شروع ماجراجویی</button><button id="menuShopBtn" class="secondary">👕 فروشگاه اسکین</button></div><div class="small">🎮 بازی آفلاین • مخصوص موبایل و رایانه<br>⭐ رکورد: <b id="best">۰</b> امتیاز • 💰 سکه: <b id="wallet">۰</b></div><div class="creator">ساخته‌شده با عشق به بازی‌سازی<br><strong>سازنده: پارسا خان محمدی</strong></div></div>';
+ $('best').textContent=fa(best);$('wallet').textContent=fa(money);
+ $('startBtn').onclick=start;$('menuShopBtn').onclick=openShop;
+ reset();touch=null;dragging=false;$('overlay').style.display='none';$('skinPanel').style.display='none';
+ running=true;paused=false;lastTime=0;beep(650);
+}
+function endGame(){
+ if(!running)return;
+ running=false;gameOver=true;paused=false;touch=null;dragging=false;
+ best=Math.max(best,score);save();
+ $('overlay').innerHTML=`<div class="panel"><h1>پایان بازی!</h1><div class="subtitle">امتیاز: <b>${fa(score)}</b><br>کریستال جمع‌شده: <b>${fa(runCoins)} 💎</b><br>رکورد: <b>${fa(best)}</b><br>سکهٔ کل: <b>${fa(money)} 💰</b></div><div class="stack"><button id="againBtn">شروع دوباره 🔥</button><button id="resultShop" class="secondary">فروشگاه اسکین 👕</button></div><div class="small">هرچه بیشتر دوام بیاوری، سرعت و سختی بازی بیشتر می‌شود.</div></div>`;
+ $('overlay').style.display='flex';
+ $('againBtn').addEventListener('click',start);
+ $('resultShop').addEventListener('click',openShop);
+ beep(150,.2);
+}
+function togglePause(){if(!running)return;paused=!paused;$('pauseBtn').textContent=paused?'▶ ادامه':'⏸ مکث';toast(paused?'بازی متوقف شد':'ادامه بده!');}
+function jump(){if(running&&!paused&&!player.jumping){player.vy=-16;player.jumping=true;beep(720)}}
+function move(dx){if(!running||paused)return;player.x=Math.max(78,Math.min(402,player.x+dx));}
+function addBurst(x,y,color,count=10){for(let i=0;i<count;i++)particles.push({x,y,vx:(Math.random()-.5)*5,vy:(Math.random()-.7)*5,life:25+Math.random()*15,color,r:2+Math.random()*3})}
+function openShop(){$('skinPanel').style.display='flex';renderShop()}
+function closeShop(){$('skinPanel').style.display='none'}
+function renderShop(){
+ const list=$('skinList');list.innerHTML='';
+ colors.forEach((s,i)=>{const b=document.createElement('button');b.className='skinBtn'+(i===activeSkin?'':' secondary');const unlockedNow=unlocked.includes(i);let status=unlockedNow?(i===activeSkin?'✓ فعال':'انتخاب'):fa(s.price)+' سکه';b.innerHTML=`<span><b>${s.name}</b><br><small>${unlockedNow?'اسکین بازشده':'اسکین ویژه'}</small></span><span>${status}</span>`;b.style.border=`1px solid ${s.body}99`;b.onclick=()=>{if(unlocked.includes(i)){activeSkin=i;save();renderShop();toast('اسکین انتخاب شد');beep(600);return}if(money<s.price){toast('سکه کافی نیست؛ کریستال جمع کن و مرحله رد کن!');return}money-=s.price;unlocked.push(i);activeSkin=i;save();renderShop();toast('اسکین جدید باز شد!');beep(900)};list.appendChild(b)});
+}
+$('startBtn').onclick=start;$('menuShopBtn').onclick=openShop;$('shopBtn').onclick=openShop;$('closeShop').onclick=closeShop;$('pauseBtn').onclick=togglePause;
+ // Delegated click fallback: remains active even when overlay markup is replaced after game over.
+ $('overlay').addEventListener('click',e=>{
+   const b=e.target.closest('button');if(!b)return;
+   if(b.id==='againBtn'||b.id==='startBtn')start();
+   else if(b.id==='resultShop'||b.id==='menuShopBtn')openShop();
+ });
+$('soundBtn').onclick=()=>{soundOn=!soundOn;$('soundBtn').textContent=soundOn?'🔊 صدا: روشن':'🔇 صدا: خاموش';if(soundOn)beep(600)};
+let touch=null,dragging=false;
+canvas.addEventListener('pointerdown',e=>{if(!running||paused)return;e.preventDefault();try{canvas.setPointerCapture(e.pointerId)}catch(_){}touch={x:e.clientX,y:e.clientY,px:player.x,py:player.y};dragging=true},{passive:false});
+canvas.addEventListener('pointermove',e=>{if(!running||paused||!dragging||!touch)return;e.preventDefault();const r=canvas.getBoundingClientRect(),dx=e.clientX-touch.x,dy=e.clientY-touch.y;player.x=Math.max(78,Math.min(402,touch.px+dx*W/r.width));if(dy<-45)jump()},{passive:false});
+function pointerEnd(e){if(!touch)return;const dx=e.clientX-touch.x,dy=e.clientY-touch.y;if(running&&!paused&&Math.abs(dx)<16&&Math.abs(dy)<16){const r=canvas.getBoundingClientRect(),x=(e.clientX-r.left)/r.width*W;if(x<W*.34)move(-78);else if(x>W*.66)move(78);else jump()}touch=null;dragging=false}
+canvas.addEventListener('pointerup',pointerEnd);canvas.addEventListener('pointercancel',()=>{touch=null;dragging=false});
+window.addEventListener('keydown',e=>{if(['ArrowLeft','ArrowRight','ArrowUp',' ','a','A','d','D','w','W'].includes(e.key))e.preventDefault();if(e.key==='ArrowLeft'||e.key==='a'||e.key==='A')move(-70);if(e.key==='ArrowRight'||e.key==='d'||e.key==='D')move(70);if(['ArrowUp',' ','w','W'].includes(e.key))jump();if(e.key==='Escape'||e.key==='p'||e.key==='P')togglePause()},{passive:false});
+function rounded(x,y,w,h,r){ctx.beginPath();ctx.roundRect(x,y,w,h,r);ctx.fill()}
+function drawBackground(){
+ const g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,'#10143b');g.addColorStop(.52,'#251447');g.addColorStop(1,'#080a20');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+ stars.forEach(s=>{ctx.globalAlpha=s.a*(.7+.3*Math.sin(frame*.04+s.x));ctx.fillStyle='#c4f6ff';ctx.beginPath();ctx.arc(s.x,(s.y+frame*.45)%H,s.r,0,Math.PI*2);ctx.fill()});ctx.globalAlpha=1;
+ for(let i=0;i<13;i++){let x=i*40-8,hh=95+(i*37%115);ctx.fillStyle=i%2?'#171a48':'#211743';ctx.fillRect(x,370-hh,32,hh);for(let yy=390-hh;yy<360;yy+=18)for(let xx=x+6;xx<x+27;xx+=11){ctx.fillStyle=(i+yy)%3?'#3b73a5':'#d64dca';ctx.globalAlpha=.45;ctx.fillRect(xx,yy,4,7);ctx.globalAlpha=1}}
+ ctx.fillStyle='#11142c';ctx.beginPath();ctx.moveTo(85,350);ctx.lineTo(395,350);ctx.lineTo(480,854);ctx.lineTo(0,854);ctx.closePath();ctx.fill();
+ ctx.strokeStyle='#3bdbff';ctx.lineWidth=4;ctx.shadowColor='#00cfff';ctx.shadowBlur=12;ctx.beginPath();ctx.moveTo(85,350);ctx.lineTo(0,854);ctx.moveTo(395,350);ctx.lineTo(480,854);ctx.stroke();ctx.shadowBlur=0;
+ for(let k=1;k<=2;k++){ctx.strokeStyle='#6b4de8';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(85+(310/3)*k,350);ctx.lineTo(k*160,854);ctx.stroke()}
+ for(let i=0;i<15;i++){let y=(i*72+frame*speed*1.5)%540+350,t=(y-350)/504,half=155*t;ctx.strokeStyle='#3d3d8b';ctx.lineWidth=1+3*t;ctx.beginPath();ctx.moveTo(240-half,y);ctx.lineTo(240+half,y);ctx.stroke()}
+}
+function draw(){
+ drawBackground();
+ obstacles.forEach(o=>{const x=roadX(o.lane,o.y),t=Math.max(.05,Math.min(1,(o.y-350)/340)),sc=.25+t*.75;ctx.save();ctx.translate(x,o.y);ctx.scale(sc,sc);ctx.shadowColor='#ff347b';ctx.shadowBlur=20;ctx.fillStyle='#ff3d83';rounded(-o.w/2,-o.h/2,o.w,o.h,9);ctx.shadowBlur=0;ctx.fillStyle='#ffd3e4';rounded(-o.w/2+7,-o.h/2+7,o.w-14,5,3);ctx.restore()});
+ gems.forEach(g=>{const x=roadX(g.lane,g.y),t=Math.max(.05,Math.min(1,(g.y-350)/340)),sc=.25+t*.75;ctx.save();ctx.translate(x,g.y);ctx.scale(sc,sc);ctx.rotate(Math.sin(frame*.05+g.lane)*.12);ctx.shadowColor='#5ffff5';ctx.shadowBlur=20;ctx.fillStyle='#6efff2';ctx.beginPath();ctx.moveTo(0,-15);ctx.lineTo(12,0);ctx.lineTo(0,15);ctx.lineTo(-12,0);ctx.closePath();ctx.fill();ctx.strokeStyle='#e0fffc';ctx.lineWidth=2;ctx.stroke();ctx.restore()});
+ particles.forEach(p=>{ctx.globalAlpha=Math.max(0,p.life/35);ctx.fillStyle=p.color;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fill();ctx.globalAlpha=1});
+ const skin=colors[activeSkin];ctx.fillStyle='#03051199';ctx.beginPath();ctx.ellipse(player.x,player.y+28,25,8,0,0,Math.PI*2);ctx.fill();
+ ctx.save();ctx.translate(player.x,player.y+(player.jumping?8:0));if(player.invuln>0)ctx.globalAlpha=.55+.45*Math.sin(frame*.8);ctx.shadowColor=skin.glow;ctx.shadowBlur=24;
+ ctx.strokeStyle=skin.leg;ctx.lineWidth=9;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(-10,17);ctx.lineTo(-14,29);ctx.moveTo(9,17);ctx.lineTo(14,29);ctx.stroke();
+ ctx.fillStyle=skin.body;rounded(-17,-10,34,31,10);ctx.fillStyle='#22254e';rounded(-12,-4,24,18,7);
+ ctx.fillStyle='#f3f6ff';ctx.beginPath();ctx.arc(0,-22,17,0,Math.PI*2);ctx.fill();ctx.fillStyle='#19234c';rounded(-13,-27,26,10,5);ctx.fillStyle='#7bffff';rounded(-8,-25,16,4,2);
+ ctx.fillStyle=skin.scarf;ctx.beginPath();ctx.moveTo(-13,-8);ctx.lineTo(-31,2+Math.sin(frame*.3)*3);ctx.lineTo(-12,0);ctx.closePath();ctx.fill();ctx.restore();
+ if(running&&!paused)updateGame();
+ requestAnimationFrame(draw)
+}
+function updateGame(){
+ frame++;stageFrames++;score+=1;speed=5+Math.min(7,score/420);spawn++;gemSpawn++;
+ if(stageFrames>=600){stageFrames=0;stage++;const reward=50+(stage-2)*25;money+=reward;save();toast(`مرحله ${fa(stage)}! جایزه: ${fa(reward)} سکه 💰`);beep(850,.13)}
+ const obstacleRate=Math.max(30,66-score/90);
+ if(spawn>obstacleRate){
+   spawn=0;
+   // Avoid spawning a neon obstacle on top of a diamond.
+   const clearLanes=[0,1,2].filter(l=>!gems.some(g=>g.lane===l && Math.abs(g.y-370)<115));
+   if(clearLanes.length){
+     let lane=clearLanes[Math.floor(Math.random()*clearLanes.length)];
+     if(Math.random()<.22){
+       // Keep one lane open, and never place an obstacle over a nearby diamond.
+       const safe=lane;
+       for(let l=0;l<3;l++)if(l!==safe && !gems.some(g=>g.lane===l && Math.abs(g.y-370)<115))obstacles.push({lane:l,y:370,w:38,h:46});
+     }else obstacles.push({lane,y:370,w:42,h:48});
+   }
+ }
+ if(gemSpawn>38){
+   gemSpawn=0;
+   // Spawn diamonds only in lanes clear of nearby neon obstacles.
+   const clearGemLanes=[0,1,2].filter(l=>!obstacles.some(o=>o.lane===l && Math.abs(o.y-365)<125));
+   if(clearGemLanes.length){
+     const lane=clearGemLanes[Math.floor(Math.random()*clearGemLanes.length)];
+     gems.push({lane,y:365});
+   }
+ }
+ player.y+=player.vy;if(player.jumping){player.vy+=.78;if(player.y>=690){player.y=690;player.vy=0;player.jumping=false}}
+ if(player.invuln>0)player.invuln--;
+ obstacles.forEach(o=>o.y+=speed*1.15);gems.forEach(g=>g.y+=speed*1.05);
+ for(let i=obstacles.length-1;i>=0;i--){const o=obstacles[i],ox=roadX(o.lane,o.y);if(Math.abs(ox-player.x)<(o.w+34)/2-4&&Math.abs(o.y-player.y)<(o.h+52)/2-5&&!player.jumping&&player.invuln<=0){addBurst(player.x,player.y,'#ff4caa',20);endGame();return}if(o.y>H+60)obstacles.splice(i,1)}
+ for(let i=gems.length-1;i>=0;i--){const g=gems[i],gx=roadX(g.lane,g.y);if(Math.abs(gx-player.x)<32&&Math.abs(g.y-player.y)<42){runCoins++;money+=1;score+=25;addBurst(gx,g.y,'#66fff2',9);gems.splice(i,1);save();beep(950)}else if(g.y>H+40)gems.splice(i,1)}
+ for(let i=particles.length-1;i>=0;i--){let p=particles[i];p.x+=p.vx;p.y+=p.vy;p.vy+=.08;p.life--;if(p.life<=0)particles.splice(i,1)}
+ $('score').textContent=fa(score);$('runCoins').textContent=fa(runCoins);$('stage').textContent=fa(stage)
+}
+updateHud();renderShop();draw();
+})();
+</script>
+</body>
+</html>
